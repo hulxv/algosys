@@ -1,0 +1,6 @@
+client/target/
+server/.venv/
+server/__pycache__/
+*.class
+*.pyc
+.DS_Store
