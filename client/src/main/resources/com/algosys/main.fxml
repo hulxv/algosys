@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.algosys.controller.MainController" styleClass="app-root">
+    <children>
+        <HBox fx:id="titleBar" styleClass="title-bar" alignment="CENTER_LEFT">
+            <padding>
+                <Insets left="16" />
+            </padding>
+
+            <HBox alignment="CENTER" spacing="8">
+                <Label text="⚡" style="-fx-text-fill: #00c7c7; -fx-font-size: 14px;" />
+                <Label text="Algorithm Performance Evaluator" styleClass="title-text" />
+                <Label text="v1.0" styleClass="version-badge" />
+            </HBox>
+            
+            <Region HBox.hgrow="ALWAYS" />
+            
+            <HBox alignment="CENTER">
+                <Button fx:id="minBtn" text="—" styleClass="win-btn" focusTraversable="false" />
+                <Button fx:id="maxBtn" text="□" styleClass="win-btn" focusTraversable="false" />
+                <Button fx:id="closeBtn" text="✕" styleClass="win-btn, win-close-btn" focusTraversable="false" />
+            </HBox>
+        </HBox>
+        
+        <HBox VBox.vgrow="ALWAYS" styleClass="main-content">
+            <children>
+                <fx:include source="left-panel.fxml" />
+                <Region prefWidth="1.0" minWidth="1.0" maxWidth="1.0" styleClass="app-divider" />
+                <StackPane fx:id="rightPanel" HBox.hgrow="ALWAYS" styleClass="right-panel">
+                    <children>
+                        <Label text="Backend results will render here" styleClass="right-placeholder" />
+                    </children>
+                </StackPane>
+            </children>
+        </HBox>
+    </children>
+</VBox>

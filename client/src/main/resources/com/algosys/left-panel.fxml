@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="382.0" minWidth="382.0" maxWidth="382.0" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.algosys.controller.LeftPanelController"
+      styleClass="left-panel">
+    <fx:define>
+        <ToggleGroup fx:id="tabGroup" />
+        <ToggleGroup fx:id="presetGroup" />
+        <ToggleGroup fx:id="modeGroup" />
+    </fx:define>
+
+    <children>
+        <HBox styleClass="tab-bar">
+            <children>
+                <ToggleButton fx:id="codeTab" text="&lt;/> Code Editor" toggleGroup="$tabGroup"
+                              focusTraversable="false" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                              styleClass="tab-btn" />
+                <ToggleButton fx:id="arrayTab" text="⊞ Array Input" toggleGroup="$tabGroup"
+                              focusTraversable="false" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                              styleClass="tab-btn" />
+            </children>
+        </HBox>
+
+        <StackPane VBox.vgrow="ALWAYS" styleClass="tab-content">
+            <children>
+                <VBox fx:id="codePane" VBox.vgrow="ALWAYS" styleClass="code-tab-pane">
+                    <children>
+                        <FlowPane fx:id="presetRow" hgap="6.0" vgap="6.0" styleClass="preset-row">
+                            <children>
+                                <ToggleButton fx:id="bubbleSortToggle" text="Bubble Sort" toggleGroup="$presetGroup"
+                                              focusTraversable="false" styleClass="preset-btn" />
+                                <ToggleButton fx:id="linearSearchToggle" text="Linear Search" toggleGroup="$presetGroup"
+                                              focusTraversable="false" styleClass="preset-btn" />
+                                <ToggleButton fx:id="binarySearchToggle" text="Binary Search" toggleGroup="$presetGroup"
+                                              focusTraversable="false" styleClass="preset-btn" />
+                                <ToggleButton fx:id="mergeSortToggle" text="Merge Sort" toggleGroup="$presetGroup"
+                                              focusTraversable="false" styleClass="preset-btn" />
+                                <ToggleButton fx:id="arrayAccessToggle" text="Array Access" toggleGroup="$presetGroup"
+                                              focusTraversable="false" styleClass="preset-btn" />
+                                <Button fx:id="addAlgorithmButton" text="+" focusTraversable="false"
+                                        styleClass="add-preset-btn" />
+                                <Button fx:id="removeAlgorithmButton" text="-" disable="true" focusTraversable="false"
+                                        styleClass="remove-preset-btn" />
+                            </children>
+                        </FlowPane>
+
+                        <HBox fx:id="customAlgorithmForm" visible="false" managed="false" spacing="8.0"
+                              styleClass="custom-algorithm-form">
+                            <children>
+                                <TextField fx:id="customAlgorithmNameField" promptText="Algorithm name"
+                                           HBox.hgrow="ALWAYS" styleClass="custom-name-field" />
+                                <Button fx:id="createAlgorithmButton" text="Add" focusTraversable="false"
+                                        styleClass="create-algorithm-btn" />
+                            </children>
+                        </HBox>
+
+                        <HBox VBox.vgrow="ALWAYS" styleClass="editor-shell">
+                            <VBox.margin>
+                                <Insets left="16.0" right="16.0" bottom="12.0" />
+                            </VBox.margin>
+                            <children>
+                                <VBox styleClass="gutter-container" VBox.vgrow="ALWAYS" prefWidth="44.0" minWidth="44.0" maxWidth="44.0">
+                                    <children>
+                                        <ScrollPane fx:id="lineNumberScrollPane" fitToWidth="true" focusTraversable="false"
+                                                    hbarPolicy="NEVER" vbarPolicy="NEVER"
+                                                    VBox.vgrow="ALWAYS"
+                                                    styleClass="line-number-scroll">
+                                            <content>
+                                                <VBox fx:id="lineNumberGutter" styleClass="line-number-gutter" />
+                                            </content>
+                                        </ScrollPane>
+                                        <ComboBox fx:id="languageSelector" focusTraversable="false" prefWidth="44.0" minWidth="44.0" maxWidth="44.0" styleClass="language-selector" />
+                                    </children>
+                                </VBox>
+                                <TextArea fx:id="codeEditor" wrapText="false" HBox.hgrow="ALWAYS"
+                                          styleClass="code-editor" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <VBox fx:id="arrayPane" visible="false" managed="false" spacing="12.0" styleClass="array-tab-pane">
+                    <padding>
+                        <Insets top="16.0" right="16.0" bottom="16.0" left="16.0" />
+                    </padding>
+                    <children>
+                        <Label text="MANUAL ARRAY (COMMA-SEPARATED)" styleClass="section-label" />
+                        <TextArea fx:id="arrayInput" prefRowCount="3"
+                                  promptText="5, 3, 8, 1, 9, 2, 7, 4, 6"
+                                  text="5, 3, 8, 1, 9, 2, 7, 4, 6"
+                                  wrapText="true" styleClass="array-input" />
+                        <Label fx:id="arrayErrorLabel" visible="false" managed="false"
+                               text="⚠  Invalid input — use comma-separated integers"
+                               styleClass="error-label" />
+                        <Label text="PREVIEW" styleClass="section-label" />
+                        <FlowPane fx:id="chipPane" hgap="6.0" vgap="6.0" />
+                        <HBox spacing="8.0" styleClass="info-callout">
+                            <children>
+                                <Label text="ℹ" styleClass="info-icon" />
+                                <Label wrapText="true" text="In Mode 1, your array is used directly. In Mode 2, arrays of increasing size are auto-generated for sweep analysis."
+                                       styleClass="info-text" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </StackPane>
+
+        <VBox spacing="10.0" styleClass="bottom-section">
+            <padding>
+                <Insets left="16.0" right="16.0" bottom="16.0" />
+            </padding>
+            <children>
+                <VBox spacing="6.0" styleClass="console-pane">
+                    <children>
+                        <Label text="CONSOLE" styleClass="section-label" />
+                        <ScrollPane fx:id="consoleScrollPane" fitToWidth="true" prefHeight="48.0"
+                                    minHeight="44.0" maxHeight="54.0" hbarPolicy="NEVER" styleClass="console-scroll">
+                            <content>
+                                <VBox fx:id="consoleLines" spacing="5.0" styleClass="console-lines" />
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </VBox>
+
+                <Label text="ANALYSIS MODE" styleClass="section-label" />
+                <HBox spacing="8.0">
+                    <children>
+                        <ToggleButton fx:id="mode1Toggle" toggleGroup="$modeGroup" focusTraversable="false"
+                                      maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="mode-btn">
+                            <graphic>
+                                <VBox spacing="2.0">
+                                    <children>
+                                        <Label text="Mode 1" styleClass="mode-title" />
+                                        <Label text="Small inputs" styleClass="mode-subtitle" />
+                                    </children>
+                                </VBox>
+                            </graphic>
+                        </ToggleButton>
+                        <ToggleButton fx:id="mode2Toggle" toggleGroup="$modeGroup" focusTraversable="false"
+                                      maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="mode-btn">
+                            <graphic>
+                                <VBox spacing="2.0">
+                                    <children>
+                                        <Label text="Mode 2" styleClass="mode-title" />
+                                        <Label text="Large sweep" styleClass="mode-subtitle" />
+                                    </children>
+                                </VBox>
+                            </graphic>
+                        </ToggleButton>
+                    </children>
+                </HBox>
+                <Label fx:id="sizesLabel" visible="false" managed="false"
+                       text="Sizes: 100, 500, 1000, 2500, 5000, 7500, 10000"
+                       styleClass="sizes-label" />
+                <Button fx:id="runButton" maxWidth="Infinity" prefHeight="48.0"
+                        text="▶   Run Analysis" styleClass="run-btn" />
+            </children>
+        </VBox>
+    </children>
+</VBox>
