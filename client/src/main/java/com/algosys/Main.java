@@ -1,34 +1,37 @@
 package com.algosys;
 
 import javafx.application.Application;
-import javafx.geometry.Insets;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class Main extends Application {
-
     @Override
-    public void start(Stage stage) {
-        TextArea codeInput = new TextArea();
-        codeInput.setPromptText("Paste your algorithm here...");
-        codeInput.setPrefHeight(300);
+    public void start(Stage stage) throws IOException {
+        FXMLLoader loader = new FXMLLoader(Main.class.getResource("/com/algosys/main.fxml"));
+        Parent root = loader.load();
 
-        Button analyzeBtn = new Button("Analyze");
-        analyzeBtn.setOnAction(e -> {
-            // TODO: send codeInput.getText() to POST /analyze
-        });
+        Scene scene = new Scene(root, 1280, 820);
+        URL stylesheet = Main.class.getResource("/com/algosys/styles.css");
+        if (stylesheet != null) {
+            scene.getStylesheets().add(stylesheet.toExternalForm());
+        }
 
-        Label resultLabel = new Label("Results will appear here.");
-
-        VBox root = new VBox(10, new Label("Algorithm Code:"), codeInput, analyzeBtn, resultLabel);
-        root.setPadding(new Insets(16));
-
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setTitle("Algorithm Performance Evaluator");
-        stage.setScene(new Scene(root, 640, 480));
+        stage.setScene(scene);
+        stage.setWidth(1280);
+        stage.setHeight(820);
+        stage.setMinWidth(980);
+        stage.setMinHeight(680);
+        stage.setMaximized(false);
+        stage.setFullScreen(false);
+        stage.centerOnScreen();
         stage.show();
     }
 
