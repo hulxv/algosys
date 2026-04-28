@@ -562,3 +562,160 @@
     -fx-background-color: -accent-hover-a;
     -fx-effect: none;
 }
+
+/* Right Panel Styles */
+.right-panel-container {
+    -fx-background-color: -root-bg;
+    -fx-text-fill: -text-primary;
+    -fx-padding: 20px;
+    -fx-spacing: 18px;
+}
+
+.section-title {
+    -fx-text-fill: #546082;
+    -fx-font-size: 10px;
+    -fx-font-weight: 800;
+    -fx-letter-spacing: 1.2px;
+}
+
+.complexity-section {
+    -fx-spacing: 8px;
+}
+
+.complexity-value {
+    -fx-text-fill: -accent;
+    -fx-font-size: 30px;
+    -fx-font-weight: 700;
+    -fx-font-family: "Cascadia Code", "JetBrains Mono", monospace;
+    -fx-min-height: 40px;
+}
+
+.complexity-name {
+    -fx-text-fill: #a6b0c7;
+    -fx-font-size: 12px;
+}
+
+.complexity-subtitle {
+    -fx-text-fill: -accent-bright;
+    -fx-font-size: 12px;
+}
+
+.complexity-description {
+    -fx-text-fill: #7f8aa3;
+    -fx-font-size: 11px;
+    -fx-wrap-text: true;
+}
+
+.metrics-container {
+    -fx-spacing: 12px;
+}
+
+.metric-card {
+    -fx-background-color: transparent;
+    -fx-border-color: #3d4856;
+    -fx-border-radius: 7px;
+    -fx-border-width: 1px;
+    -fx-padding: 14px 12px;
+    -fx-spacing: 6px;
+}
+
+.metric-label {
+    -fx-text-fill: #4f5b78;
+    -fx-font-size: 9px;
+    -fx-font-weight: 800;
+    -fx-letter-spacing: 1px;
+}
+
+.metric-value {
+    -fx-text-fill: #e8edf7;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-font-family: "Cascadia Code", "JetBrains Mono", monospace;
+}
+
+.metric-value-min {
+    -fx-text-fill: #55c278;
+}
+
+.metric-value-max {
+    -fx-text-fill: #f2b84b;
+}
+
+.chart-section {
+    -fx-spacing: 8px;
+}
+
+.execution-chart {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.execution-chart .chart-legend {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.execution-chart .chart-plot-background {
+    -fx-background-color: transparent;
+    -fx-border-color: #3d4856;
+    -fx-border-width: 1px;
+    -fx-border-radius: 7px;
+}
+
+.execution-chart .axis {
+    -fx-text-fill: #546082;
+    -fx-font-size: 10px;
+}
+
+.execution-chart .axis-label {
+    -fx-text-fill: #7f8aa3;
+    -fx-font-size: 10px;
+    -fx-font-weight: 500;
+}
+
+.execution-chart .axis-tick-mark {
+    -fx-tick-label-fill: #546082;
+}
+
+.execution-chart .chart-series-line {
+    -fx-stroke: -accent;
+    -fx-stroke-width: 2px;
+}
+
+.execution-chart .chart-line-symbol {
+    -fx-background-color: -accent;
+    -fx-padding: 5px;
+}
+
+.complexity-reference {
+    -fx-spacing: 12px;
+    -fx-alignment: center-left;
+    -fx-background-color: rgba(32, 37, 56, 0.4);
+    -fx-border-color: #3d4856;
+    -fx-border-radius: 7px;
+    -fx-border-width: 1px;
+    -fx-padding: 12px;
+}
+
+.complexity-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-radius: 0;
+    -fx-border-width: 0;
+    -fx-text-fill: #7f8aa3;
+    -fx-padding: 2px 0;
+    -fx-min-width: 0;
+    -fx-pref-width: Region.USE_COMPUTED_SIZE;
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+}
+
+.complexity-btn:hover {
+    -fx-text-fill: -accent-bright;
+}
+
+.complexity-btn-active {
+    -fx-text-fill: -accent-bright;
+}
