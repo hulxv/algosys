@@ -1,15 +1,14 @@
-VENV := server/.venv
-PYTHON := $(VENV)/bin/python
+SERVER_IMAGE := algosys/server
 
 .PHONY: install server client build clean
 
 install:
-	python3 -m venv $(VENV)
-	$(VENV)/bin/pip install -r server/requirements.txt
+	docker build -t $(SERVER_IMAGE) ./server
 	cd client && mvn dependency:resolve
 
-server:
-	$(PYTHON) server/app.py
+server: install
+	docker ps -q --filter ancestor=$(SERVER_IMAGE) | xargs -r docker stop
+	docker run --rm -p 5000:5000 $(SERVER_IMAGE)
 
 client:
 	cd client && mvn javafx:run
