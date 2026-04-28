@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="rightPanelRoot" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.algosys.controller.RightPanelController" 
+      styleClass="right-panel-container" spacing="20" style="-fx-padding: 20;" VBox.vgrow="ALWAYS">
+    
+    <!-- Estimated Complexity Section -->
+    <VBox spacing="8" styleClass="complexity-section">
+        <HBox spacing="6" alignment="CENTER_LEFT">
+            <Label text="◯" style="-fx-text-fill: #00c7c7; -fx-font-size: 10px;" />
+            <Label text="ESTIMATED COMPLEXITY" styleClass="section-title" />
+        </HBox>
+        
+        <HBox spacing="16" alignment="TOP_LEFT">
+            <!-- Complexity Value -->
+            <VBox spacing="4" alignment="TOP_LEFT" prefWidth="80">
+                <Label text="O(n)" styleClass="complexity-value" />
+                <Label text="Linear" styleClass="complexity-name complexity-subtitle" wrapText="true" />
+            </VBox>
+            
+            <!-- Complexity Description -->
+            <Label text="Time scales proportionally with input size." styleClass="complexity-description" wrapText="true" HBox.hgrow="ALWAYS" />
+        </HBox>
+    </VBox>
+    
+    <!-- Metrics Cards Section -->
+    <HBox spacing="12" styleClass="metrics-container" minHeight="100">
+        <!-- MIN TIME Card -->
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+            <Label text="MIN TIME" styleClass="metric-label" />
+            <Label fx:id="minTimeValue" text="0.00ms" styleClass="metric-value metric-value-min" style="-fx-text-fill: #00c7c7;" />
+        </VBox>
+        
+        <!-- MAX TIME Card -->
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+            <Label text="MAX TIME" styleClass="metric-label" />
+            <Label fx:id="maxTimeValue" text="0.00ms" styleClass="metric-value metric-value-max" style="-fx-text-fill: #f2b84b;" />
+        </VBox>
+        
+        <!-- DATA POINTS Card -->
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+            <Label text="DATA POINTS" styleClass="metric-label" />
+            <Label fx:id="dataPointsValue" text="0" styleClass="metric-value" />
+        </VBox>
+        
+        <!-- MODE Card -->
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+            <Label text="MODE" styleClass="metric-label" />
+            <Label fx:id="modeValue" text="Mode 2" styleClass="metric-value" />
+        </VBox>
+        
+        <!-- RATIO Card -->
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+            <Label text="RATIO (MAX/MIN)" styleClass="metric-label" />
+            <Label fx:id="ratioValue" text="0.0x" styleClass="metric-value" />
+        </VBox>
+    </HBox>
+    
+    <!-- Chart Section -->
+    <VBox spacing="8" VBox.vgrow="ALWAYS" styleClass="chart-section">
+        <HBox spacing="6" alignment="CENTER_LEFT">
+            <Label text="⚡" style="-fx-text-fill: #00c7c7; -fx-font-size: 10px;" />
+            <Label text="EXECUTION TIME VS INPUT SIZE" styleClass="section-title" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label text="O(n)" style="-fx-text-fill: #00c7c7; -fx-font-size: 10px; -fx-font-weight: 700;" />
+        </HBox>
+        
+        <LineChart fx:id="executionChart" 
+                   title=""
+                   animated="false"
+                   VBox.vgrow="ALWAYS"
+                   styleClass="execution-chart">
+            <xAxis>
+                <NumberAxis fx:id="xAxis" label="Input Size (n)" lowerBound="0" upperBound="10000" />
+            </xAxis>
+            <yAxis>
+                <NumberAxis fx:id="yAxis" label="Execution Time" lowerBound="0" upperBound="200" />
+            </yAxis>
+        </LineChart>
+    </VBox>
+    
+    <!-- Complexity Reference Section -->
+    <HBox spacing="12" styleClass="complexity-reference" minHeight="50">
+        <Label text="COMPLEXITY REFERENCE" styleClass="section-title" />
+        <Region HBox.hgrow="ALWAYS" />
+        
+        <HBox spacing="6" alignment="CENTER">
+            <Label text="●" style="-fx-text-fill: #546082; -fx-font-size: 8px;" />
+            <Button text="O(1)" styleClass="complexity-btn" />
+        </HBox>
+        
+        <HBox spacing="6" alignment="CENTER">
+            <Label text="●" style="-fx-text-fill: #00c7c7; -fx-font-size: 8px;" />
+            <Button text="O(log n)" styleClass="complexity-btn" />
+        </HBox>
+        
+        <HBox spacing="6" alignment="CENTER">
+            <Label text="●" style="-fx-text-fill: #00c7c7; -fx-font-size: 8px;" />
+            <Button text="O(n)" styleClass="complexity-btn, complexity-btn-active" />
+        </HBox>
+        
+        <HBox spacing="6" alignment="CENTER">
+            <Label text="●" style="-fx-text-fill: #f2b84b; -fx-font-size: 8px;" />
+            <Button text="O(n log n)" styleClass="complexity-btn" />
+        </HBox>
+        
+        <HBox spacing="6" alignment="CENTER">
+            <Label text="●" style="-fx-text-fill: #ff5f57; -fx-font-size: 8px;" />
+            <Button text="O(n²)" styleClass="complexity-btn" />
+        </HBox>
+        
+        <HBox spacing="6" alignment="CENTER">
+            <Label text="●" style="-fx-text-fill: #ff5f57; -fx-font-size: 8px;" />
+            <Button text="O(2ⁿ)" styleClass="complexity-btn" />
+        </HBox>
+    </HBox>
+</VBox>
