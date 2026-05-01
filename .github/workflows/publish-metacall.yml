@@ -1,0 +1,34 @@
+name: Publish MetaCall Core
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"  # every Sunday — picks up upstream changes weekly
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest   # amd64
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Clone metacall/core
+        run: git clone --depth=1 https://github.com/metacall/core
+
+      - name: Build images
+        working-directory: core
+        run: ./docker-compose.sh build
+
+      - name: Push dev
+        run: |
+          docker tag metacall/core:dev hulxv/metacall-core:dev
+          docker push hulxv/metacall-core:dev
+
+      - name: Push runtime
+        run: |
+          docker tag metacall/core:runtime hulxv/metacall-core:runtime
+          docker push hulxv/metacall-core:runtime
