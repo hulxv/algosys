@@ -14,8 +14,10 @@
       fx:controller="com.algosys.controller.RightPanelController" 
       styleClass="right-panel-container" spacing="20" style="-fx-padding: 20;" VBox.vgrow="ALWAYS">
     
+    <VBox fx:id="rightSectionsWrapper" spacing="20" styleClass="right-sections-wrapper" VBox.vgrow="ALWAYS">
+
     <!-- Estimated Complexity Section -->
-    <VBox spacing="8" styleClass="complexity-section">
+    <VBox spacing="8" styleClass="complexity-section right-panel-section">
         <HBox spacing="6" alignment="CENTER_LEFT">
             <Label text="◯" style="-fx-text-fill: #00c7c7; -fx-font-size: 10px;" />
             <Label text="ESTIMATED COMPLEXITY" styleClass="section-title" />
@@ -34,40 +36,40 @@
     </VBox>
     
     <!-- Metrics Cards Section -->
-    <HBox spacing="12" styleClass="metrics-container" minHeight="100">
+    <HBox spacing="12" styleClass="metrics-container right-panel-section" minHeight="100">
         <!-- MIN TIME Card -->
-        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="0.0" alignment="CENTER_LEFT">
             <Label text="MIN TIME" styleClass="metric-label" />
             <Label fx:id="minTimeValue" text="0.00ms" styleClass="metric-value metric-value-min" style="-fx-text-fill: #00c7c7;" />
         </VBox>
         
         <!-- MAX TIME Card -->
-        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="0.0" alignment="CENTER_LEFT">
             <Label text="MAX TIME" styleClass="metric-label" />
             <Label fx:id="maxTimeValue" text="0.00ms" styleClass="metric-value metric-value-max" style="-fx-text-fill: #f2b84b;" />
         </VBox>
         
         <!-- DATA POINTS Card -->
-        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="0.0" alignment="CENTER_LEFT">
             <Label text="DATA POINTS" styleClass="metric-label" />
             <Label fx:id="dataPointsValue" text="0" styleClass="metric-value" />
         </VBox>
         
         <!-- MODE Card -->
-        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="0.0" alignment="CENTER_LEFT">
             <Label text="MODE" styleClass="metric-label" />
             <Label fx:id="modeValue" text="Mode 2" styleClass="metric-value" />
         </VBox>
         
         <!-- RATIO Card -->
-        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+        <VBox styleClass="metric-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="0.0" alignment="CENTER_LEFT">
             <Label text="RATIO (MAX/MIN)" styleClass="metric-label" />
             <Label fx:id="ratioValue" text="0.0x" styleClass="metric-value" />
         </VBox>
     </HBox>
     
     <!-- Chart Section -->
-    <VBox spacing="8" VBox.vgrow="ALWAYS" styleClass="chart-section">
+    <VBox spacing="8" VBox.vgrow="ALWAYS" styleClass="chart-section right-panel-section">
         <HBox spacing="6" alignment="CENTER_LEFT">
             <Label text="⚡" style="-fx-text-fill: #00c7c7; -fx-font-size: 10px;" />
             <Label text="EXECUTION TIME VS INPUT SIZE" styleClass="section-title" />
@@ -90,38 +92,41 @@
     </VBox>
     
     <!-- Complexity Reference Section -->
-    <HBox spacing="12" styleClass="complexity-reference" minHeight="50">
+    <HBox spacing="12" styleClass="complexity-reference right-panel-section" minHeight="50">
         <Label text="COMPLEXITY REFERENCE" styleClass="section-title" />
-        <Region HBox.hgrow="ALWAYS" />
-        
-        <HBox spacing="6" alignment="CENTER">
+
+        <HBox spacing="8" alignment="CENTER" styleClass="complexity-pill">
             <Label text="●" style="-fx-text-fill: #546082; -fx-font-size: 8px;" />
-            <Button text="O(1)" styleClass="complexity-btn" />
+            <Label text="O(1)" styleClass="complexity-btn" />
         </HBox>
-        
-        <HBox spacing="6" alignment="CENTER">
+
+        <HBox spacing="8" alignment="CENTER" styleClass="complexity-pill">
             <Label text="●" style="-fx-text-fill: #00c7c7; -fx-font-size: 8px;" />
-            <Button text="O(log n)" styleClass="complexity-btn" />
+            <Label text="O(log n)" styleClass="complexity-btn" />
         </HBox>
-        
-        <HBox spacing="6" alignment="CENTER">
+
+        <HBox spacing="8" alignment="CENTER" styleClass="complexity-pill">
             <Label text="●" style="-fx-text-fill: #00c7c7; -fx-font-size: 8px;" />
-            <Button text="O(n)" styleClass="complexity-btn, complexity-btn-active" />
+            <Label text="O(n)" styleClass="complexity-btn complexity-btn-active" />
         </HBox>
-        
-        <HBox spacing="6" alignment="CENTER">
+
+        <HBox spacing="8" alignment="CENTER" styleClass="complexity-pill">
             <Label text="●" style="-fx-text-fill: #f2b84b; -fx-font-size: 8px;" />
-            <Button text="O(n log n)" styleClass="complexity-btn" />
+            <Label text="O(n log n)" styleClass="complexity-btn" />
         </HBox>
-        
-        <HBox spacing="6" alignment="CENTER">
+
+        <HBox spacing="8" alignment="CENTER" styleClass="complexity-pill">
             <Label text="●" style="-fx-text-fill: #ff5f57; -fx-font-size: 8px;" />
-            <Button text="O(n²)" styleClass="complexity-btn" />
+            <Label text="O(n²)" styleClass="complexity-btn" />
         </HBox>
-        
-        <HBox spacing="6" alignment="CENTER">
+
+        <HBox spacing="8" alignment="CENTER" styleClass="complexity-pill">
             <Label text="●" style="-fx-text-fill: #ff5f57; -fx-font-size: 8px;" />
-            <Button text="O(2ⁿ)" styleClass="complexity-btn" />
+            <Label text="O(2ⁿ)" styleClass="complexity-btn" />
         </HBox>
+
+        <Region HBox.hgrow="ALWAYS" />
     </HBox>
+
+    </VBox> <!-- end rightSectionsWrapper -->
 </VBox>

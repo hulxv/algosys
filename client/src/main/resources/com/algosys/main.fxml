@@ -33,7 +33,7 @@
             <children>
                 <fx:include source="left-panel.fxml" />
                 <Region prefWidth="1.0" minWidth="1.0" maxWidth="1.0" styleClass="app-divider" />
-                <fx:include source="right-panel.fxml" />
+                <fx:include source="right-panel.fxml" HBox.hgrow="ALWAYS" />
             </children>
         </HBox>
     </children>
