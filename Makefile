@@ -1,6 +1,7 @@
-SERVER_IMAGE := algosys/server
+SERVER_IMAGE    := algosys/server
+SERVER_HUB_IMAGE := hulxv/algosys-server:latest
 
-.PHONY: install server client build clean
+.PHONY: install server server-hub client build clean
 
 install:
 	docker build -t $(SERVER_IMAGE) ./server
@@ -9,6 +10,11 @@ install:
 server: install
 	docker ps -q --filter ancestor=$(SERVER_IMAGE) | xargs -r docker stop
 	docker run --rm -p 5000:5000 $(SERVER_IMAGE)
+
+server-hub:
+	docker pull $(SERVER_HUB_IMAGE)
+	docker ps -q --filter ancestor=$(SERVER_HUB_IMAGE) | xargs -r docker stop
+	docker run --rm -p 5000:5000 $(SERVER_HUB_IMAGE)
 
 client:
 	cd client && mvn javafx:run
