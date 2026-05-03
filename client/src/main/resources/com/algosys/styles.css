@@ -276,14 +276,20 @@
     -fx-border-width: 0 1 0 0;
 }
 
+.editor-options-row {
+    -fx-background-color: -panel-bg;
+}
+
 .language-selector {
-    -fx-background-color: -editor-gutter-bg;
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 7px;
     -fx-text-fill: -text-muted;
     -fx-font-family: -font-family-ui;
-    -fx-font-size: 10px;
-    -fx-padding: 4px 2px 4px 2px;
-    -fx-border-width: 1 0 0 0;
-    -fx-border-color: -border-subtle transparent transparent transparent;
+    -fx-font-size: 12px;
+    -fx-padding: 0 8px;
+    -fx-border-width: 1px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 7px;
 }
 
 .language-selector:hover {
@@ -293,8 +299,8 @@
 .language-selector .list-cell {
     -fx-text-fill: -text-muted;
     -fx-font-family: -font-family-ui;
-    -fx-font-size: 10px;
-    -fx-padding: 4px 2px;
+    -fx-font-size: 12px;
+    -fx-padding: 5px 4px;
     -fx-background-color: transparent;
 }
 
@@ -307,6 +313,24 @@
     -fx-background-color: -text-muted;
     -fx-max-width: 6px;
     -fx-max-height: 4px;
+}
+
+.function-name-field {
+    -fx-background-color: -card-bg;
+    -fx-background-radius: 7px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 7px;
+    -fx-border-width: 1px;
+    -fx-text-fill: -text-primary;
+    -fx-prompt-text-fill: -text-muted;
+    -fx-padding: 0 10px;
+    -fx-font-family: "Cascadia Code", "JetBrains Mono", "Consolas", monospace;
+    -fx-font-size: 12px;
+}
+
+.function-name-field:focused,
+.language-selector:focused {
+    -fx-border-color: -accent;
 }
 
 .combo-box-popup .list-view {

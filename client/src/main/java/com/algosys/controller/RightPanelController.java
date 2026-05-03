@@ -1,7 +1,10 @@
 package com.algosys.controller;
 
+import java.util.Map;
+
 import com.algosys.model.AnalysisResult;
 import com.algosys.util.EventBus;
+
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -9,8 +12,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
-import java.util.Map;
+import javafx.util.StringConverter;
 
 public class RightPanelController {
     private static final String CONSTANT_COLOR = "#7f8aa3";
@@ -139,6 +141,7 @@ public class RightPanelController {
 
             xAxis.setUpperBound(Math.max(1, maxInputSize * 1.1));
             yAxis.setUpperBound(Math.max(0.001, maxExecutionTime * 1.1));
+            configureYAxisUnits(maxExecutionTime);
 
             executionChart.getData().add(series);
         } catch (Exception e) {
@@ -152,9 +155,43 @@ public class RightPanelController {
             return String.format("%.0fns", ms * 1_000_000);
         }
         if (ms < 1) {
-            return String.format("%.3fms", ms);
+            return String.format("%.1fus", ms * 1_000);
         }
         return String.format("%.2fms", ms);
+    }
+
+    private void configureYAxisUnits(double maxExecutionTimeMs) {
+        if (maxExecutionTimeMs < 0.001 && maxExecutionTimeMs > 0) {
+            yAxis.setLabel("Execution Time (ns)");
+            yAxis.setTickLabelFormatter(axisFormatter(1_000_000, "ns"));
+        } else if (maxExecutionTimeMs < 1) {
+            yAxis.setLabel("Execution Time (us)");
+            yAxis.setTickLabelFormatter(axisFormatter(1_000, "us"));
+        } else {
+            yAxis.setLabel("Execution Time (ms)");
+            yAxis.setTickLabelFormatter(axisFormatter(1, "ms"));
+        }
+    }
+
+    private StringConverter<Number> axisFormatter(double multiplier, String unit) {
+        return new StringConverter<>() {
+            @Override
+            public String toString(Number value) {
+                double converted = value.doubleValue() * multiplier;
+                if (converted >= 100 || converted == Math.rint(converted)) {
+                    return String.format("%.0f%s", converted, unit);
+                }
+                if (converted >= 10) {
+                    return String.format("%.1f%s", converted, unit);
+                }
+                return String.format("%.2f%s", converted, unit);
+            }
+
+            @Override
+            public Number fromString(String string) {
+                return 0;
+            }
+        };
     }
 
     private String complexityName(String value) {
