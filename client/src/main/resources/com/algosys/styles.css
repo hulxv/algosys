@@ -508,6 +508,10 @@
     -fx-text-fill: -success;
 }
 
+.console-icon-error {
+    -fx-text-fill: -danger;
+}
+
 .console-message {
     -fx-text-fill: -text-muted;
     -fx-font-family: "Cascadia Code", "JetBrains Mono", "Consolas", monospace;
@@ -780,9 +784,12 @@
 }
 
 .complexity-pill .complexity-btn-active {
-    -fx-background-color: -accent; 
-    -fx-text-fill: -root-bg; /* dark text on cyan fill to match app */
-    -fx-border-radius: 8px;
-    -fx-padding: 4px 8px;
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-primary;
+    -fx-padding: 0 2px;
     -fx-font-weight: 900;
+}
+
+.complexity-pill-active {
+    -fx-border-width: 1.5px;
 }
