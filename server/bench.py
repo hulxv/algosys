@@ -2,6 +2,7 @@ import time
 import random
 import statistics
 from typing import Any
+from analyzer import analyze_dataset
 from executer import Executer
 
 # Fixed n grid: same sizes every run → reproducible JIT / cache state.

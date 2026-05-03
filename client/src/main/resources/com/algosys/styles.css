@@ -569,11 +569,24 @@
     -fx-text-fill: -text-primary;
     -fx-padding: 20px;
     -fx-spacing: 18px;
+    -fx-font-family: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Unified panel style used for each right-side section (rounded card look) */
+.right-panel-section {
+    /* use the left panel background color for each card */
+    -fx-background-color: -panel-bg;
+    -fx-background-radius: 10px;
+    -fx-border-color: rgba(34,40,47,0.28); /* subtle dark border */
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 14px;
+    -fx-spacing: 10px;
 }
 
 .section-title {
     -fx-text-fill: #546082;
-    -fx-font-size: 10px;
+    -fx-font-size: 12px;
     -fx-font-weight: 800;
     -fx-letter-spacing: 1.2px;
 }
@@ -584,15 +597,16 @@
 
 .complexity-value {
     -fx-text-fill: -accent;
-    -fx-font-size: 30px;
-    -fx-font-weight: 700;
+    -fx-font-size: 36px;
+    -fx-font-weight: 900;
     -fx-font-family: "Cascadia Code", "JetBrains Mono", monospace;
-    -fx-min-height: 40px;
+    -fx-min-height: 44px;
 }
 
 .complexity-name {
     -fx-text-fill: #a6b0c7;
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
 }
 
 .complexity-subtitle {
@@ -602,7 +616,7 @@
 
 .complexity-description {
     -fx-text-fill: #7f8aa3;
-    -fx-font-size: 11px;
+    -fx-font-size: 12px;
     -fx-wrap-text: true;
 }
 
@@ -611,25 +625,30 @@
 }
 
 .metric-card {
-    -fx-background-color: transparent;
-    -fx-border-color: #3d4856;
-    -fx-border-radius: 7px;
+    -fx-background-color: -panel-bg; /* match left panel */
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(34,40,47,0.22);
+    -fx-border-radius: 8px;
     -fx-border-width: 1px;
-    -fx-padding: 14px 12px;
+    -fx-padding: 10px 12px;
     -fx-spacing: 6px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-pref-width: 140px;
+    -fx-min-width: 110px;
+    -fx-max-width: 220px;
 }
 
 .metric-label {
-    -fx-text-fill: #4f5b78;
-    -fx-font-size: 9px;
+    -fx-text-fill: #7f8aa3;
+    -fx-font-size: 10px;
     -fx-font-weight: 800;
     -fx-letter-spacing: 1px;
 }
 
 .metric-value {
     -fx-text-fill: #e8edf7;
-    -fx-font-size: 14px;
-    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+    -fx-font-weight: 900;
     -fx-font-family: "Cascadia Code", "JetBrains Mono", monospace;
 }
 
@@ -642,13 +661,14 @@
 }
 
 .chart-section {
-    -fx-spacing: 8px;
+    -fx-spacing: 6px;
 }
 
 .execution-chart {
     -fx-background-color: transparent;
     -fx-border-width: 0;
-    -fx-padding: 0;
+    -fx-padding: 6px;
+    -fx-border-radius: 10px;
 }
 
 .execution-chart .chart-legend {
@@ -658,9 +678,19 @@
 
 .execution-chart .chart-plot-background {
     -fx-background-color: transparent;
-    -fx-border-color: #3d4856;
+    -fx-border-color: rgba(34,40,47,0.22);
     -fx-border-width: 1px;
     -fx-border-radius: 7px;
+}
+
+/* Grid lines inside the execution chart (faint, behind series line) */
+.execution-chart .chart-horizontal-grid-lines .chart-horizontal-grid-line,
+.execution-chart .chart-vertical-grid-lines .chart-vertical-grid-line,
+.execution-chart .chart-horizontal-grid-lines .horizontal-grid-line,
+.execution-chart .chart-vertical-grid-lines .vertical-grid-line {
+    -fx-stroke: #22282f;
+    -fx-stroke-width: 1px;
+    -fx-opacity: 1;
 }
 
 .execution-chart .axis {
@@ -691,11 +721,11 @@
 .complexity-reference {
     -fx-spacing: 12px;
     -fx-alignment: center-left;
-    -fx-background-color: rgba(32, 37, 56, 0.4);
-    -fx-border-color: #3d4856;
-    -fx-border-radius: 7px;
-    -fx-border-width: 1px;
     -fx-padding: 12px;
+    -fx-background-color: rgba(15,18,25,0.36);
+    -fx-border-color: rgba(84,96,130,0.10);
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
 }
 
 .complexity-btn {
@@ -703,12 +733,11 @@
     -fx-border-color: transparent;
     -fx-border-radius: 0;
     -fx-border-width: 0;
-    -fx-text-fill: #7f8aa3;
-    -fx-padding: 2px 0;
+    -fx-text-fill: -text-primary; /* app standard off-white */
+    -fx-padding: 0 2px;
     -fx-min-width: 0;
-    -fx-pref-width: Region.USE_COMPUTED_SIZE;
-    -fx-font-size: 10px;
-    -fx-font-weight: 700;
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
     -fx-cursor: hand;
 }
 
@@ -718,4 +747,42 @@
 
 .complexity-btn-active {
     -fx-text-fill: -accent-bright;
+}
+
+/* Pill styling for complexity reference items */
+.complexity-pill {
+    -fx-background-color: rgba(32,37,56,0.22);
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(84,96,130,0.12);
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 6px 10px;
+    -fx-alignment: center-left;
+    -fx-spacing: 8px;
+    -fx-cursor: hand;
+}
+
+.complexity-pill .complexity-btn {
+    -fx-text-fill: -text-primary; /* use same off-white as app */
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+}
+
+/* Brighter background on hover for all pills */
+.complexity-pill:hover {
+    -fx-background-color: rgba(0,199,199,0.12);
+}
+
+.complexity-pill:hover .complexity-btn {
+    -fx-text-fill: -text-primary;
+}
+
+.complexity-pill .complexity-btn-active {
+    -fx-background-color: -accent; 
+    -fx-text-fill: -root-bg; /* dark text on cyan fill to match app */
+    -fx-border-radius: 8px;
+    -fx-padding: 4px 8px;
+    -fx-font-weight: 900;
 }
