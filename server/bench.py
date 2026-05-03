@@ -1,6 +1,7 @@
 import time
 import random
 from typing import Any
+from analyzer import analyze_dataset
 from executer import Executer
 
 
@@ -20,6 +21,8 @@ class Bench:
         arr = [random.random() for _ in range(n)]
         return self.bench_array(arr)
 
-    def bench_exhaustive(self, sizes: list[int]) -> list[dict[str, int]]:
-        """Run bench_random for each size. Returns list of {n, time_ns} for analysis."""
-        return [{"n": n, "time_ns": self.bench_random(n)} for n in sizes]
+    def bench_exhaustive(self, sizes: list[int]) -> dict[str, Any]:
+        """Run bench_random for each size. Returns points and complexity analysis."""
+        points = [{"n": n, "time_ns": self.bench_random(n)} for n in sizes]
+        complexity = analyze_dataset(points)
+        return {"points": points, "complexity": complexity}
