@@ -55,7 +55,7 @@ public class AnalysisService {
 
     private void analyze(AnalysisRequest requestPayload) {
         publish("analysis-started", requestPayload);
-        publish("analysis-log", "POST /analyze lang=" + requestPayload.lang + " func=" + requestPayload.func);
+        publish("analysis-log", "POST /analyze mode=" + requestPayload.mode + " lang=" + requestPayload.lang + " func=" + requestPayload.func);
 
         HttpRequest request = HttpRequest.newBuilder(URI.create(BASE_URL + "/analyze"))
                 .timeout(Duration.ofSeconds(120))
@@ -83,6 +83,9 @@ public class AnalysisService {
             AnalysisResult result = parseResult(requestPayload.mode, response.body());
             publish("analysis-complete", result);
             publish("analysisComplete", result);
+            if (result.mode == 1) {
+                publish("analysis-log", "Manual output: " + result.manualOutput);
+            }
         } catch (RuntimeException ex) {
             publish("analysis-error", "Could not parse API response: " + ex.getMessage());
         } finally {
@@ -104,6 +107,7 @@ public class AnalysisService {
         double r2 = extractJsonDouble(body, "r2", 0);
         double coef = extractJsonDouble(body, "coef", 0);
         double intercept = extractJsonDouble(body, "intercept", 0);
+        String manualOutput = requestModeIsManual(mode) ? extractJsonValue(body, "output", "null") : "";
 
         return new AnalysisResult(
                 mode,
@@ -112,7 +116,8 @@ public class AnalysisService {
                 complexity,
                 r2,
                 coef,
-                intercept
+                intercept,
+                manualOutput
         );
     }
 
@@ -130,8 +135,8 @@ public class AnalysisService {
 
     private String toJson(AnalysisRequest request) {
         return """
-                {"lang":"%s","func":"%s","code":"%s"}
-                """.formatted(escape(request.lang), escape(request.func), escape(request.code)).strip();
+                {"mode":%d,"lang":"%s","func":"%s","code":"%s","array":%s}
+                """.formatted(request.mode, escape(request.lang), escape(request.func), escape(request.code), arrayJson(request.array)).strip();
     }
 
     private String extractJsonString(String body, String key, String fallback) {
@@ -142,6 +147,15 @@ public class AnalysisService {
     private double extractJsonDouble(String body, String key, double fallback) {
         Matcher matcher = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*(-?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)").matcher(body);
         return matcher.find() ? Double.parseDouble(matcher.group(1)) : fallback;
+    }
+
+    private String extractJsonValue(String body, String key, String fallback) {
+        Matcher matcher = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*(\\[[^\\]]*]|\"[^\"]*\"|-?\\d+(?:\\.\\d+)?|true|false|null)").matcher(body);
+        return matcher.find() ? matcher.group(1) : fallback;
+    }
+
+    private boolean requestModeIsManual(int mode) {
+        return mode == 1;
     }
 
     private double[] toArray(List<Double> values) {
@@ -159,6 +173,20 @@ public class AnalysisService {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
+    }
+
+    private String arrayJson(int[] values) {
+        if (values == null || values.length == 0) {
+            return "[]";
+        }
+        StringBuilder builder = new StringBuilder("[");
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0) {
+                builder.append(',');
+            }
+            builder.append(values[i]);
+        }
+        return builder.append(']').toString();
     }
 
     private String unescape(String value) {

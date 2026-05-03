@@ -901,7 +901,12 @@ public class LeftPanelController {
                 addLog("!", "#ff5f57", "Enter a function name to measure.");
                 return;
             }
-            EventBus.getInstance().publish("run-analysis", new AnalysisRequest(mode, selectedLanguageTag(), functionName, code));
+            if (mode == 1 && arrayErrorLabel.isVisible()) {
+                addLog("!", "#ff5f57", "Fix the manual array before running Mode 1.");
+                return;
+            }
+            int[] requestArray = Arrays.copyOf(parsedArray, parsedArray.length);
+            EventBus.getInstance().publish("run-analysis", new AnalysisRequest(mode, selectedLanguageTag(), functionName, code, requestArray));
             addLog("▶", "#a855f7", "Starting analysis — Mode " + mode + "...");
         });
     }

@@ -8,6 +8,7 @@ public class AnalysisResult {
     public final double r2;
     public final double coef;
     public final double intercept;
+    public final String manualOutput;
 
     public AnalysisResult(
             int mode,
@@ -16,7 +17,8 @@ public class AnalysisResult {
             String complexityClass,
             double r2,
             double coef,
-            double intercept
+            double intercept,
+            String manualOutput
     ) {
         this.mode = mode;
         this.inputSizes = inputSizes;
@@ -25,6 +27,7 @@ public class AnalysisResult {
         this.r2 = r2;
         this.coef = coef;
         this.intercept = intercept;
+        this.manualOutput = manualOutput;
     }
 
     public double minTimeMs() {
