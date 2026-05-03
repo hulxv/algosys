@@ -1,0 +1,61 @@
+name: Test Server
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'server/**'
+      - 'test_server.py'
+      - '.github/workflows/test-server.yml'
+  pull_request:
+    paths:
+      - 'server/**'
+      - 'test_server.py'
+      - '.github/workflows/test-server.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install test dependencies
+        run: pip install requests
+
+      - name: Build server image
+        run: docker build -t algosys/server ./server
+
+      - name: Start server
+        run: docker run -d --name algosys-server -p 5000:5000 algosys/server
+
+      - name: Wait for server to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:5000/health > /dev/null; then
+              echo "Server ready after $((i * 2))s"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Server failed to start"
+          docker logs algosys-server
+          exit 1
+
+      - name: Run tests
+        run: python3 test_server.py
+
+      - name: Server logs on failure
+        if: failure()
+        run: docker logs algosys-server
+
+      - name: Cleanup
+        if: always()
+        run: docker rm -f algosys-server || true
