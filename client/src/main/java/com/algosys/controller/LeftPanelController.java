@@ -118,6 +118,7 @@ public class LeftPanelController {
     @FXML private ScrollPane lineNumberScrollPane;
     @FXML private VBox lineNumberGutter;
     @FXML private ComboBox<LoaderOption> languageSelector;
+    @FXML private TextField functionNameField;
     @FXML private TextArea codeEditor;
     @FXML private FlowPane presetRow;
     @FXML private ToggleButton bubbleSortToggle;
@@ -895,7 +896,12 @@ public class LeftPanelController {
 
             int mode = currentMode();
             String code = codeEditor.getText();
-            EventBus.getInstance().publish("run-analysis", new AnalysisRequest(mode, selectedLanguageTag(), "algorithm", code));
+            String functionName = selectedFunctionName();
+            if (functionName.isEmpty()) {
+                addLog("!", "#ff5f57", "Enter a function name to measure.");
+                return;
+            }
+            EventBus.getInstance().publish("run-analysis", new AnalysisRequest(mode, selectedLanguageTag(), functionName, code));
             addLog("▶", "#a855f7", "Starting analysis — Mode " + mode + "...");
         });
     }
@@ -942,6 +948,11 @@ public class LeftPanelController {
     private String selectedLanguageTag() {
         LoaderOption option = languageSelector != null ? languageSelector.getValue() : null;
         return option != null ? option.tag() : "py";
+    }
+
+    private String selectedFunctionName() {
+        String value = functionNameField != null ? functionNameField.getText() : "algorithm";
+        return value == null ? "" : value.trim();
     }
 
     private void setAnalysisRunning(boolean running) {
