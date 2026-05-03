@@ -6,13 +6,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import com.algosys.util.AnalysisService;
 
 import java.io.IOException;
 import java.net.URL;
 
 public class Main extends Application {
+    private AnalysisService analysisService;
+
     @Override
     public void start(Stage stage) throws IOException {
+        analysisService = new AnalysisService();
+
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("/com/algosys/main.fxml"));
         Parent root = loader.load();
 
