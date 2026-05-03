@@ -19,6 +19,7 @@ public class RightPanelController {
     private static final String FAST_COLOR = "#00c7c7";
     private static final String WARNING_COLOR = "#f2b84b";
     private static final String SLOW_COLOR = "#ff5f57";
+    private static final String MANUAL_COLOR = "#a6b0c7";
 
     @FXML
     private VBox rightPanelRoot;
@@ -117,7 +118,11 @@ public class RightPanelController {
             complexityDescription.setText(complexityDescription(result.complexityClass, result.r2));
             chartComplexityValue.setText(result.complexityClass);
             chartComplexityValue.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 10px; -fx-font-weight: 700;");
-            updateReferenceHighlight(result.complexityClass, color);
+            if (result.mode == 1) {
+                clearReferenceHighlight();
+            } else {
+                updateReferenceHighlight(result.complexityClass, color);
+            }
 
             updateChart(result);
         }
@@ -204,6 +209,7 @@ public class RightPanelController {
             case "O(n^2 log n)" -> "Quadratic log";
             case "O(n^3)" -> "Cubic";
             case "O(2^n)" -> "Exponential";
+            case "Manual" -> "Manual run";
             default -> "Unknown";
         };
     }
@@ -218,12 +224,14 @@ public class RightPanelController {
             case "O(n^2 log n)" -> String.format("Growth matched n squared log n behavior. Fit R2 %.4f.", r2);
             case "O(n^3)" -> String.format("Runtime grew cubically across the benchmark sweep. Fit R2 %.4f.", r2);
             case "O(2^n)" -> String.format("Runtime matched exponential growth on the measured points. Fit R2 %.4f.", r2);
+            case "Manual" -> "Ran once on the array you entered. Use Mode 2 for Big O estimation.";
             default -> String.format("The API returned an unrecognized class. Fit R2 %.4f.", r2);
         };
     }
 
     private String complexityColor(String value) {
         return switch (value) {
+            case "Manual" -> MANUAL_COLOR;
             case "O(1)" -> CONSTANT_COLOR;
             case "O(log n)", "O(n)" -> FAST_COLOR;
             case "O(n log n)" -> WARNING_COLOR;
@@ -243,13 +251,7 @@ public class RightPanelController {
                 "O(2^n)", new ReferenceItem(exponentialPill, exponentialDot, exponentialLabel, SLOW_COLOR)
         );
 
-        items.forEach((label, item) -> {
-            item.label.getStyleClass().remove("complexity-btn-active");
-            item.pill.getStyleClass().remove("complexity-pill-active");
-            item.dot.setStyle("-fx-text-fill: " + item.defaultColor + "; -fx-font-size: 8px;");
-            item.label.setStyle("");
-            item.pill.setStyle("");
-        });
+        resetReferenceItems(items);
 
         ReferenceItem active = items.get(complexityClass);
         if (active != null) {
@@ -259,6 +261,28 @@ public class RightPanelController {
             active.label.setStyle("");
             active.pill.setStyle("-fx-border-color: " + color + "; -fx-background-color: rgba(255,255,255,0.04);");
         }
+    }
+
+    private void clearReferenceHighlight() {
+        resetReferenceItems(Map.of(
+                "O(1)", new ReferenceItem(constantPill, constantDot, constantLabel, CONSTANT_COLOR),
+                "O(log n)", new ReferenceItem(logPill, logDot, logLabel, FAST_COLOR),
+                "O(n)", new ReferenceItem(linearPill, linearDot, linearLabel, FAST_COLOR),
+                "O(n log n)", new ReferenceItem(linearithmicPill, linearithmicDot, linearithmicLabel, WARNING_COLOR),
+                "O(n^2)", new ReferenceItem(quadraticPill, quadraticDot, quadraticLabel, SLOW_COLOR),
+                "O(n^3)", new ReferenceItem(cubicPill, cubicDot, cubicLabel, SLOW_COLOR),
+                "O(2^n)", new ReferenceItem(exponentialPill, exponentialDot, exponentialLabel, SLOW_COLOR)
+        ));
+    }
+
+    private void resetReferenceItems(Map<String, ReferenceItem> items) {
+        items.forEach((label, item) -> {
+            item.label.getStyleClass().remove("complexity-btn-active");
+            item.pill.getStyleClass().remove("complexity-pill-active");
+            item.dot.setStyle("-fx-text-fill: " + item.defaultColor + "; -fx-font-size: 8px;");
+            item.label.setStyle("");
+            item.pill.setStyle("");
+        });
     }
 
     private record ReferenceItem(HBox pill, Label dot, Label label, String defaultColor) {

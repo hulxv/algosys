@@ -41,25 +41,29 @@ Lists the language loaders available on this server.
 
 ### `POST /analyze`
 
-Loads a code snippet into the requested runtime, benchmarks it across a range of input sizes, and returns the detected asymptotic complexity.
+Loads a code snippet into the requested runtime. In Mode 1 it runs the function once on a manual array; in Mode 2 it benchmarks across generated input sizes and returns the detected asymptotic complexity.
 
 **Request body** (`Content-Type: application/json`)
 
-| Field  | Type   | Description                                 |
-| ------ | ------ | ------------------------------------------- |
-| `lang` | string | Loader tag (see `/loaders`)                 |
-| `func` | string | Name of the top-level function to benchmark |
-| `code` | string | Full source snippet in the target language  |
+| Field   | Type      | Description                                            |
+| ------- | --------- | ------------------------------------------------------ |
+| `mode`  | integer   | `1` for manual run, `2` for automatic benchmark sweep  |
+| `lang`  | string    | Loader tag (see `/loaders`)                            |
+| `func`  | string    | Name of the top-level function to run or benchmark     |
+| `code`  | string    | Full source snippet in the target language             |
+| `array` | number[]  | Manual input array for Mode 1; ignored by Mode 2       |
 
 ```json
 {
+  "mode": 2,
   "lang": "py",
   "func": "f",
-  "code": "def f(arr):\n    return sum(arr)\n"
+  "code": "def f(arr):\n    return sum(arr)\n",
+  "array": [5, 3, 8, 1]
 }
 ```
 
-**Response — success** `200`
+**Response — Mode 2 success** `200`
 
 ```json
 {
@@ -79,6 +83,26 @@ Loads a code snippet into the requested runtime, benchmarks it across a range of
       "coef":      8.37,
       "intercept": -12.4
     }
+  }
+}
+```
+
+**Response — Mode 1 success** `200`
+
+```json
+{
+  "dataset": {
+    "points": [
+      { "n": 4, "time_ns": 10421 }
+    ],
+    "complexity": {
+      "class": "Manual",
+      "r2": 1.0,
+      "coef": 0.0,
+      "intercept": 10421.0
+    },
+    "input": [5.0, 3.0, 8.0, 1.0],
+    "output": 17.0
   }
 }
 ```
@@ -200,6 +224,6 @@ Accepted by the server; refer to the metacall loader documentation for the expec
 ```bash
 curl -s -X POST http://localhost:5000/analyze \
   -H 'Content-Type: application/json' \
-  -d '{"lang":"py","func":"f","code":"def f(arr): return sum(arr)"}' \
+  -d '{"mode":2,"lang":"py","func":"f","code":"def f(arr): return sum(arr)","array":[]}' \
   | python3 -m json.tool
 ```
