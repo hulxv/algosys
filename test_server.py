@@ -120,6 +120,29 @@ double f(double* arr, int n) {
 """
 
 
+#  Rust: functions take Vec<f64> (ownership transferred per call).
+# O(1) is not tested: the bench wrapper creates a fresh Vec<f64> on every
+# iteration (O(n) work) so O(1) functions are indistinguishable from O(n).
+_RS_ON = """\
+pub fn f(arr: Vec<f64>) -> f64 {
+    arr.iter().sum()
+}
+"""
+
+_RS_ON2 = """\
+pub fn f(arr: Vec<f64>) -> f64 {
+    let n = arr.len();
+    let mut s = 0.0f64;
+    for i in 0..n {
+        for j in 0..n {
+            s += (arr[i] - arr[j]).abs();
+        }
+    }
+    s
+}
+"""
+
+
 TESTS = [
     #  Python 
     ("Python O(1) - index access",       "py",   "f", "def f(arr): return arr[0]",            "O(1)"),
@@ -171,7 +194,13 @@ TESTS = [
     # ("Go O(n) - linear sum",     "go", "F", _GO_ON,  "O(n)"),
     # ("Go O(n^2) - nested loops", "go", "F", _GO_ON2, "O(n^2)"),
 
-    #  WebAssembly 
+    #  Rust
+    # O(1) omitted: bench wrapper allocates Vec<f64> each iteration (O(n) overhead)
+    # which masks constant-time functions. O(n) and above are reliable.
+    ("Rust O(n) — linear sum",     "rs", "f", _RS_ON,  "O(n)"),
+    ("Rust O(n^2) — nested loops", "rs", "f", _RS_ON2, "O(n^2)"),
+
+    #  WebAssembly
     # WASM tests are not included: the metacall wasm loader expects binary .wasm
     # files, not source code. Inline WASM source testing is not practical.
     # To test WASM, pre-compile a .wasm file and load it via the /analyze endpoint.

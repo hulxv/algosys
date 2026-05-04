@@ -6,7 +6,7 @@ from analyzer import analyze_dataset
 from executer import Executer
 
 # Fixed n grid: same sizes every run → reproducible JIT / cache state.
-_N_GRID          = [100, 300, 1000, 3000, 10000, 30000, 100000]
+_N_GRID          = [100, 300, 1000, 3000, 10000, 30000, 50000, 70000, 100000, 130000, 160000, 200000]
 
 # Stop adding sizes once a single phase exceeds this. Slow algorithms
 # (Python O(n²) at n=100k) terminate at the same n on a stable machine.

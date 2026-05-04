@@ -95,15 +95,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcob4 \
     # RPC loader (libcurl - trixie ships libcurl4t64)
     libcurl4t64 \
-    # Rust toolchain bootstrap (rs_loader compiles Rust at runtime via cargo)
-    curl autoconf automake ca-certificates wget \
+    # Rust toolchain bootstrap (rs_loader compiles Rust at runtime via cargo).
+    # gcc provides the `cc` linker that rustc requires to link compiled crates;
+    # libc6-dev provides crti.o/crtn.o (glibc startup objects) and the
+    # unversioned libc.so symlink — both needed by the final link step.
+    curl autoconf automake ca-certificates wget gcc libc6-dev \
     && rm -rf /var/lib/apt/lists/*
-
-# metacall's c_loader calls tcc_add_library(s, "c") which looks for libc.so
-# (the linker-name file). The runtime image only provides libc.so.6; the
-# unversioned symlink lives in libc6-dev which is too large to install.
-# Create it directly from the versioned file that libc6 already provides.
-RUN ln -sf /usr/lib/x86_64-linux-gnu/libc.so.6 /usr/lib/x86_64-linux-gnu/libc.so
 
 # .NET 8 runtime - metacall-runtime.sh only goes up to netcore5.
 # --version 8.0.408 is an SDK version; use --channel 8.0 for the runtime installer.
