@@ -1,8 +1,14 @@
 package com.algosys.controller;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.algosys.model.AnalysisRequest;
 import com.algosys.util.AnalysisService.LoaderOption;
 import com.algosys.util.EventBus;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
@@ -28,15 +34,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class LeftPanelController {
     private static final List<LoaderOption> FALLBACK_LOADERS = List.of(
             new LoaderOption("py", "Python"),
-            new LoaderOption("node", "Node.js")
+            new LoaderOption("node", "Node.js"),
+            new LoaderOption("rs", "Rust")
     );
 
     private static final String BUBBLE_SORT = """
@@ -270,6 +272,20 @@ public class LeftPanelController {
                 }
                 module.exports = { algorithm };
                 """;
+            case "rs" -> """
+                fn algorithm(mut arr: Vec<i32>) -> Vec<i32> {
+                    let n = arr.len();
+                    if n <= 1 { return arr; }
+                    for i in 0..n.saturating_sub(1) {
+                        for j in 0..n - i - 1 {
+                            if arr[j] > arr[j + 1] {
+                                arr.swap(j, j + 1);
+                            }
+                        }
+                    }
+                    arr
+                }
+                """;
             case "ts" -> """
                 function algorithm(arr: number[]): number[] {
                     let n = arr.length;
@@ -340,6 +356,16 @@ public class LeftPanelController {
                 }
                 module.exports = { algorithm };
                 """;
+            case "rs" -> """
+                fn algorithm(arr: &[i32]) -> isize {
+                    if arr.is_empty() { return -1; }
+                    let target = arr[arr.len() / 2];
+                    for (i, &v) in arr.iter().enumerate() {
+                        if v == target { return i as isize; }
+                    }
+                    -1
+                }
+                """;
             case "ts" -> """
                 function algorithm(arr: number[]): number {
                     let target = arr[Math.floor(arr.length / 2)];
@@ -404,6 +430,23 @@ public class LeftPanelController {
                     return -1;
                 }
                 module.exports = { algorithm };
+                """;
+            case "rs" -> """
+                fn algorithm(arr: &[i32]) -> isize {
+                    if arr.is_empty() { return -1; }
+                    let mut v = arr.to_vec();
+                    v.sort_unstable();
+                    let target = v[v.len() / 2];
+                    let mut left: isize = 0;
+                    let mut right: isize = (v.len() as isize) - 1;
+                    while left <= right {
+                        let mid = left + (right - left) / 2;
+                        let midv = v[mid as usize];
+                        if midv == target { return mid as isize; }
+                        if midv < target { left = mid + 1; } else { right = mid - 1; }
+                    }
+                    -1
+                }
                 """;
             case "ts" -> """
                 function algorithm(arr: number[]): number {
@@ -482,6 +525,27 @@ public class LeftPanelController {
                 }
                 module.exports = { algorithm };
                 """;
+            case "rs" -> """
+                fn merge(left: &[i32], right: &[i32]) -> Vec<i32> {
+                    let mut res = Vec::with_capacity(left.len() + right.len());
+                    let (mut i, mut j) = (0, 0);
+                    while i < left.len() && j < right.len() {
+                        if left[i] < right[j] { res.push(left[i]); i += 1; }
+                        else { res.push(right[j]); j += 1; }
+                    }
+                    res.extend_from_slice(&left[i..]);
+                    res.extend_from_slice(&right[j..]);
+                    res
+                }
+
+                fn algorithm(arr: &[i32]) -> Vec<i32> {
+                    if arr.len() <= 1 { return arr.to_vec(); }
+                    let mid = arr.len() / 2;
+                    let left = algorithm(&arr[..mid]);
+                    let right = algorithm(&arr[mid..]);
+                    merge(&left, &right)
+                }
+                """;
             case "ts" -> """
                 function merge(left: number[], right: number[]): number[] {
                     let res: number[] = [], i = 0, j = 0;
@@ -517,6 +581,11 @@ public class LeftPanelController {
                 }
                 module.exports = { algorithm };
                 """;
+            case "rs" -> """
+                fn algorithm(arr: &[i32]) -> Option<i32> {
+                    arr.get(0).copied()
+                }
+                """;
             case "ts" -> """
                 function algorithm(arr: number[]): number {
                     return arr[0];
@@ -549,6 +618,12 @@ public class LeftPanelController {
                     // Write your algorithm here
                 }
                 module.exports = { algorithm };
+                """;
+            case "rs" -> """
+                fn algorithm(arr: Vec<i32>) -> Vec<i32> {
+                    // Write your algorithm here.
+                    arr
+                }
                 """;
             case "ts" -> """
                 function algorithm(arr: number[]): number {
@@ -947,7 +1022,7 @@ public class LeftPanelController {
     }
 
     private boolean isFrontendSupportedLoader(String tag) {
-        return "py".equals(tag) || "node".equals(tag);
+        return "py".equals(tag) || "node".equals(tag) || "rs".equals(tag);
     }
 
     private String selectedLanguageTag() {
