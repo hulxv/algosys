@@ -12,9 +12,9 @@ SUPPORTED_LOADERS: dict[str, str] = {
     # "ts":   "TypeScript",
     # "cs":   "C# (.NET 8)",
     # "c":    "C",
-    "cob":  "COBOL",
+    # "cob":  "COBOL",
     "rs":   "Rust",
-    "wasm": "WebAssembly",
+    # "wasm": "WebAssembly",
     # "rb"  - removed; MRI Ruby crashes (SIGSEGV) when called from a non-main thread
     # "go"  - no go_loader in metacall; only a Go port exists (TODO upstream)
     # "java" - removed; causes SIGSEGV in the multithreaded Flask process

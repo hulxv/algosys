@@ -70,6 +70,31 @@ _BENCH_WRAPPERS: dict[str, str] = {
     # Ruby removed: MRI crashes (SIGSEGV) when called via metacall from a
     # non-main OS thread - same root cause as the Java loader removal.
 
+    # Rust — user functions take Vec<f64> (ownership). The bench wrapper
+    # never marshals the array across metacall (it builds it in Rust).
+    # arr.clone() in the loop adds O(n) overhead; OK because we only test
+    # O(n) and above. The volatile write of arr[0] per iteration prevents
+    # the optimizer from CSE-ing f() across iterations (otherwise it would
+    # compute f() once with constant input and hoist it out of the timed
+    # loop). The volatile read of sink prevents dead-code elimination of
+    # f()'s return value.
+    "rs": (
+        "pub fn {bench_name}(n: i64, k: i64) -> i64 {{\n"
+        "    let n_usize = n as usize;\n"
+        "    let mut arr: Vec<f64> = (0..n_usize).map(|i| i as f64 / n as f64).collect();\n"
+        "    let mut sink: f64 = 0.0;\n"
+        "    sink += {fn_name}(arr.clone());\n"
+        "    let _t0 = std::time::Instant::now();\n"
+        "    for i in 0..k {{\n"
+        "        unsafe {{ std::ptr::write_volatile(&mut arr[0], i as f64 * 1e-9); }}\n"
+        "        sink += {fn_name}(arr.clone());\n"
+        "    }}\n"
+        "    let _el = _t0.elapsed().as_nanos() as i64;\n"
+        "    let _ = unsafe {{ std::ptr::read_volatile(&sink) }};\n"
+        "    _el\n"
+        "}}\n"
+    ),
+
     # C# — top-level static functions (C# 9+ / Roslyn scripting).
     # Stopwatch.GetTimestamp() / Frequency converts ticks → nanoseconds.
     "cs": (
@@ -151,8 +176,8 @@ class Executer:
         is *not* in the timed region. For languages without a wrapper, fall
         back to outer wall-clock timing."""
         if self.lang in _BENCH_WRAPPERS:
-            # C wrapper self-allocates its array - only pass (n, k), not the list.
-            if self.lang == "c":
+            # C and Rust wrappers self-allocate their array - pass (n, k), not the list.
+            if self.lang in ("c", "rs"):
                 return int(metacall(self._bench_name, len(arr), k))
             return int(metacall(self._bench_name, arr, k))
         t0 = time.perf_counter_ns()
