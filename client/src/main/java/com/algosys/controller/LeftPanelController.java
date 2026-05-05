@@ -1,7 +1,14 @@
 package com.algosys.controller;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.algosys.model.AnalysisRequest;
+import com.algosys.util.AnalysisService.LoaderOption;
 import com.algosys.util.EventBus;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
@@ -27,11 +34,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 public class LeftPanelController {
+    private static final List<LoaderOption> FALLBACK_LOADERS = List.of(
+            new LoaderOption("py", "Python"),
+            new LoaderOption("node", "Node.js"),
+            new LoaderOption("rs", "Rust")
+    );
+
     private static final String BUBBLE_SORT = """
             public static void algorithm(int[] arr) {
                 int n = arr.length;
@@ -110,7 +119,8 @@ public class LeftPanelController {
     @FXML private VBox arrayPane;
     @FXML private ScrollPane lineNumberScrollPane;
     @FXML private VBox lineNumberGutter;
-    @FXML private ComboBox<String> languageSelector;
+    @FXML private ComboBox<LoaderOption> languageSelector;
+    @FXML private TextField functionNameField;
     @FXML private TextArea codeEditor;
     @FXML private FlowPane presetRow;
     @FXML private ToggleButton bubbleSortToggle;
@@ -139,6 +149,7 @@ public class LeftPanelController {
     private int customAlgorithmCount;
     private final Map<ToggleButton, String> customAlgorithms = new HashMap<>();
     private boolean updatingLineNumbers;
+    private boolean analysisRunning;
 
     @FXML
     private void initialize() {
@@ -156,7 +167,7 @@ public class LeftPanelController {
         codeTab.setSelected(true);
         mode1Toggle.setSelected(true);
         bubbleSortToggle.setSelected(true);
-        setCodeTemplate(BUBBLE_SORT);
+        applyAlgorithmTemplate();
         parseArrayInput(arrayInput.getText());
     }
 
@@ -210,8 +221,7 @@ public class LeftPanelController {
 
     private void applyAlgorithmTemplate() {
         Toggle toggle = presetGroup.getSelectedToggle();
-        String lang = languageSelector != null ? languageSelector.getValue() : "Java";
-        if (lang == null) lang = "Java";
+        String lang = selectedLanguageTag();
 
         if (toggle instanceof ToggleButton tb && customAlgorithms.containsKey(tb)) {
             setCodeTemplate(customAlgorithms.get(tb));
@@ -237,7 +247,7 @@ public class LeftPanelController {
 
     private String getBubbleSortTemplate(String language) {
         return switch (language) {
-            case "Python" -> """
+            case "py" -> """
                 def algorithm(arr):
                     n = len(arr)
                     for i in range(n - 1):
@@ -246,7 +256,7 @@ public class LeftPanelController {
                                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
                     return arr
                 """;
-            case "JavaScript" -> """
+            case "node" -> """
                 function algorithm(arr) {
                     let n = arr.length;
                     for (let i = 0; i < n - 1; i++) {
@@ -260,19 +270,66 @@ public class LeftPanelController {
                     }
                     return arr;
                 }
+                module.exports = { algorithm };
                 """;
-            case "C++" -> """
-                void algorithm(std::vector<int>& arr) {
-                    int n = arr.size();
-                    for (int i = 0; i < n - 1; i++) {
-                        for (int j = 0; j < n - i - 1; j++) {
+            case "rs" -> """
+                fn algorithm(mut arr: Vec<i32>) -> Vec<i32> {
+                    let n = arr.len();
+                    if n <= 1 { return arr; }
+                    for i in 0..n.saturating_sub(1) {
+                        for j in 0..n - i - 1 {
+                            if arr[j] > arr[j + 1] {
+                                arr.swap(j, j + 1);
+                            }
+                        }
+                    }
+                    arr
+                }
+                """;
+            case "ts" -> """
+                function algorithm(arr: number[]): number[] {
+                    let n = arr.length;
+                    for (let i = 0; i < n - 1; i++) {
+                        for (let j = 0; j < n - i - 1; j++) {
                             if (arr[j] > arr[j + 1]) {
-                                int temp = arr[j];
+                                let temp = arr[j];
                                 arr[j] = arr[j + 1];
                                 arr[j + 1] = temp;
                             }
                         }
                     }
+                    return arr;
+                }
+                module.exports = { algorithm };
+                """;
+            case "cs" -> """
+                static double algorithm(double[] arr) {
+                    int n = arr.Length;
+                    for (int i = 0; i < n - 1; i++) {
+                        for (int j = 0; j < n - i - 1; j++) {
+                            if (arr[j] > arr[j + 1]) {
+                                double temp = arr[j];
+                                arr[j] = arr[j + 1];
+                                arr[j + 1] = temp;
+                            }
+                        }
+                    }
+                    return arr[0];
+                }
+                """;
+            case "c" -> """
+                double algorithm(double* arr, int n) {
+                    int i, j;
+                    for (i = 0; i < n - 1; ++i) {
+                        for (j = 0; j < n - i - 1; ++j) {
+                            if (arr[j] > arr[j + 1]) {
+                                double temp = arr[j];
+                                arr[j] = arr[j + 1];
+                                arr[j + 1] = temp;
+                            }
+                        }
+                    }
+                    return arr[0];
                 }
                 """;
             default -> BUBBLE_SORT;
@@ -281,7 +338,7 @@ public class LeftPanelController {
 
     private String getLinearSearchTemplate(String language) {
         return switch (language) {
-            case "Python" -> """
+            case "py" -> """
                 def algorithm(arr):
                     target = arr[len(arr) // 2]
                     for i in range(len(arr)):
@@ -289,7 +346,7 @@ public class LeftPanelController {
                             return i
                     return -1
                 """;
-            case "JavaScript" -> """
+            case "node" -> """
                 function algorithm(arr) {
                     let target = arr[Math.floor(arr.length / 2)];
                     for (let i = 0; i < arr.length; i++) {
@@ -297,11 +354,42 @@ public class LeftPanelController {
                     }
                     return -1;
                 }
+                module.exports = { algorithm };
                 """;
-            case "C++" -> """
-                int algorithm(const std::vector<int>& arr) {
-                    int target = arr[arr.size() / 2];
-                    for (int i = 0; i < arr.size(); i++) {
+            case "rs" -> """
+                fn algorithm(arr: &[i32]) -> isize {
+                    if arr.is_empty() { return -1; }
+                    let target = arr[arr.len() / 2];
+                    for (i, &v) in arr.iter().enumerate() {
+                        if v == target { return i as isize; }
+                    }
+                    -1
+                }
+                """;
+            case "ts" -> """
+                function algorithm(arr: number[]): number {
+                    let target = arr[Math.floor(arr.length / 2)];
+                    for (let i = 0; i < arr.length; i++) {
+                        if (arr[i] === target) return i;
+                    }
+                    return -1;
+                }
+                module.exports = { algorithm };
+                """;
+            case "cs" -> """
+                static double algorithm(double[] arr) {
+                    double target = arr[arr.Length / 2];
+                    for (int i = 0; i < arr.Length; i++) {
+                        if (arr[i] == target) return i;
+                    }
+                    return -1;
+                }
+                """;
+            case "c" -> """
+                double algorithm(double* arr, int n) {
+                    double target = arr[n / 2];
+                    int i;
+                    for (i = 0; i < n; ++i) {
                         if (arr[i] == target) return i;
                     }
                     return -1;
@@ -313,7 +401,7 @@ public class LeftPanelController {
 
     private String getBinarySearchTemplate(String language) {
         return switch (language) {
-            case "Python" -> """
+            case "py" -> """
                 def algorithm(arr):
                     arr.sort()
                     target = arr[len(arr) // 2]
@@ -328,7 +416,7 @@ public class LeftPanelController {
                             right = mid - 1
                     return -1
                 """;
-            case "JavaScript" -> """
+            case "node" -> """
                 function algorithm(arr) {
                     arr.sort((a, b) => a - b);
                     let target = arr[Math.floor(arr.length / 2)];
@@ -341,13 +429,45 @@ public class LeftPanelController {
                     }
                     return -1;
                 }
+                module.exports = { algorithm };
                 """;
-            case "C++" -> """
-                #include <algorithm>
-                int algorithm(std::vector<int>& arr) {
-                    std::sort(arr.begin(), arr.end());
-                    int target = arr[arr.size() / 2];
-                    int left = 0, right = arr.size() - 1;
+            case "rs" -> """
+                fn algorithm(arr: &[i32]) -> isize {
+                    if arr.is_empty() { return -1; }
+                    let mut v = arr.to_vec();
+                    v.sort_unstable();
+                    let target = v[v.len() / 2];
+                    let mut left: isize = 0;
+                    let mut right: isize = (v.len() as isize) - 1;
+                    while left <= right {
+                        let mid = left + (right - left) / 2;
+                        let midv = v[mid as usize];
+                        if midv == target { return mid as isize; }
+                        if midv < target { left = mid + 1; } else { right = mid - 1; }
+                    }
+                    -1
+                }
+                """;
+            case "ts" -> """
+                function algorithm(arr: number[]): number {
+                    arr.sort((a, b) => a - b);
+                    let target = arr[Math.floor(arr.length / 2)];
+                    let left = 0, right = arr.length - 1;
+                    while (left <= right) {
+                        let mid = Math.floor(left + (right - left) / 2);
+                        if (arr[mid] === target) return mid;
+                        if (arr[mid] < target) left = mid + 1;
+                        else right = mid - 1;
+                    }
+                    return -1;
+                }
+                module.exports = { algorithm };
+                """;
+            case "cs" -> """
+                static double algorithm(double[] arr) {
+                    Array.Sort(arr);
+                    double target = arr[arr.Length / 2];
+                    int left = 0, right = arr.Length - 1;
                     while (left <= right) {
                         int mid = left + (right - left) / 2;
                         if (arr[mid] == target) return mid;
@@ -363,22 +483,22 @@ public class LeftPanelController {
 
     private String getMergeSortTemplate(String language) {
         return switch (language) {
-            case "Python" -> """
-                def merge(left, right):
-                    res = []
-                    i = j = 0
-                    while i < len(left) and j < len(right):
-                        if left[i] < right[j]:
-                            res.append(left[i])
-                            i += 1
-                        else:
-                            res.append(right[j])
-                            j += 1
-                    res.extend(left[i:])
-                    res.extend(right[j:])
-                    return res
-
+            case "py" -> """
                 def algorithm(arr):
+                    def merge(left, right):
+                        res = []
+                        i = j = 0
+                        while i < len(left) and j < len(right):
+                            if left[i] < right[j]:
+                                res.append(left[i])
+                                i += 1
+                            else:
+                                res.append(right[j])
+                                j += 1
+                        res.extend(left[i:])
+                        res.extend(right[j:])
+                        return res
+
                     if len(arr) <= 1:
                         return arr
                     mid = len(arr) // 2
@@ -386,9 +506,49 @@ public class LeftPanelController {
                     right = algorithm(arr[mid:])
                     return merge(left, right)
                 """;
-            case "JavaScript" -> """
-                function merge(left, right) {
-                    let res = [], i = 0, j = 0;
+            case "node" -> """
+                function algorithm(arr) {
+                    function merge(left, right) {
+                        let res = [], i = 0, j = 0;
+                        while (i < left.length && j < right.length) {
+                            if (left[i] < right[j]) res.push(left[i++]);
+                            else res.push(right[j++]);
+                        }
+                        return res.concat(left.slice(i)).concat(right.slice(j));
+                    }
+
+                    if (arr.length <= 1) return arr;
+                    let mid = Math.floor(arr.length / 2);
+                    let left = algorithm(arr.slice(0, mid));
+                    let right = algorithm(arr.slice(mid));
+                    return merge(left, right);
+                }
+                module.exports = { algorithm };
+                """;
+            case "rs" -> """
+                fn merge(left: &[i32], right: &[i32]) -> Vec<i32> {
+                    let mut res = Vec::with_capacity(left.len() + right.len());
+                    let (mut i, mut j) = (0, 0);
+                    while i < left.len() && j < right.len() {
+                        if left[i] < right[j] { res.push(left[i]); i += 1; }
+                        else { res.push(right[j]); j += 1; }
+                    }
+                    res.extend_from_slice(&left[i..]);
+                    res.extend_from_slice(&right[j..]);
+                    res
+                }
+
+                fn algorithm(arr: &[i32]) -> Vec<i32> {
+                    if arr.len() <= 1 { return arr.to_vec(); }
+                    let mid = arr.len() / 2;
+                    let left = algorithm(&arr[..mid]);
+                    let right = algorithm(&arr[mid..]);
+                    merge(&left, &right)
+                }
+                """;
+            case "ts" -> """
+                function merge(left: number[], right: number[]): number[] {
+                    let res: number[] = [], i = 0, j = 0;
                     while (i < left.length && j < right.length) {
                         if (left[i] < right[j]) res.push(left[i++]);
                         else res.push(right[j++]);
@@ -396,36 +556,14 @@ public class LeftPanelController {
                     return res.concat(left.slice(i)).concat(right.slice(j));
                 }
 
-                function algorithm(arr) {
+                function algorithm(arr: number[]): number[] {
                     if (arr.length <= 1) return arr;
                     let mid = Math.floor(arr.length / 2);
                     let left = algorithm(arr.slice(0, mid));
                     let right = algorithm(arr.slice(mid));
                     return merge(left, right);
                 }
-                """;
-            case "C++" -> """
-                std::vector<int> merge(std::vector<int>& left, std::vector<int>& right) {
-                    std::vector<int> res;
-                    int i = 0, j = 0;
-                    while (i < left.size() && j < right.size()) {
-                        if (left[i] < right[j]) res.push_back(left[i++]);
-                        else res.push_back(right[j++]);
-                    }
-                    while (i < left.size()) res.push_back(left[i++]);
-                    while (j < right.size()) res.push_back(right[j++]);
-                    return res;
-                }
-
-                std::vector<int> algorithm(std::vector<int> arr) {
-                    if (arr.size() <= 1) return arr;
-                    int mid = arr.size() / 2;
-                    std::vector<int> left(arr.begin(), arr.begin() + mid);
-                    std::vector<int> right(arr.begin() + mid, arr.end());
-                    left = algorithm(left);
-                    right = algorithm(right);
-                    return merge(left, right);
-                }
+                module.exports = { algorithm };
                 """;
             default -> MERGE_SORT;
         };
@@ -433,17 +571,34 @@ public class LeftPanelController {
 
     private String getArrayAccessTemplate(String language) {
         return switch (language) {
-            case "Python" -> """
+            case "py" -> """
                 def algorithm(arr):
                     return arr[0]
                 """;
-            case "JavaScript" -> """
+            case "node" -> """
                 function algorithm(arr) {
                     return arr[0];
                 }
+                module.exports = { algorithm };
                 """;
-            case "C++" -> """
-                int algorithm(const std::vector<int>& arr) {
+            case "rs" -> """
+                fn algorithm(arr: &[i32]) -> Option<i32> {
+                    arr.get(0).copied()
+                }
+                """;
+            case "ts" -> """
+                function algorithm(arr: number[]): number {
+                    return arr[0];
+                }
+                module.exports = { algorithm };
+                """;
+            case "cs" -> """
+                static double algorithm(double[] arr) {
+                    return arr[0];
+                }
+                """;
+            case "c" -> """
+                double algorithm(double* arr, int n) {
                     return arr[0];
                 }
                 """;
@@ -453,19 +608,37 @@ public class LeftPanelController {
 
     private String getCustomAlgorithmTemplate(String language) {
         return switch (language) {
-            case "Python" -> """
+            case "py" -> """
                 def algorithm(arr):
                     # Write your algorithm here
                     pass
                 """;
-            case "JavaScript" -> """
+            case "node" -> """
                 function algorithm(arr) {
                     // Write your algorithm here
                 }
+                module.exports = { algorithm };
                 """;
-            case "C++" -> """
-                void algorithm(std::vector<int>& arr) {
-                    // Write your algorithm here
+            case "rs" -> """
+                fn algorithm(arr: Vec<i32>) -> Vec<i32> {
+                    // Write your algorithm here.
+                    arr
+                }
+                """;
+            case "ts" -> """
+                function algorithm(arr: number[]): number {
+                    return arr[0];
+                }
+                module.exports = { algorithm };
+                """;
+            case "cs" -> """
+                static double algorithm(double[] arr) {
+                    return arr[0];
+                }
+                """;
+            case "c" -> """
+                double algorithm(double* arr, int n) {
+                    return arr[0];
                 }
                 """;
             default -> CUSTOM_ALGORITHM;
@@ -496,7 +669,7 @@ public class LeftPanelController {
 
     private void configureLanguageSelector() {
         if (languageSelector != null) {
-            languageSelector.getItems().addAll("Java", "Python", "JavaScript", "C++");
+            languageSelector.getItems().setAll(FALLBACK_LOADERS);
             languageSelector.getSelectionModel().selectFirst();
             languageSelector.valueProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal != null && !newVal.equals(oldVal)) {
@@ -645,8 +818,7 @@ public class LeftPanelController {
         customToggle.setFocusTraversable(false);
         customToggle.setToggleGroup(presetGroup);
         customToggle.getStyleClass().add("preset-btn");
-        String lang = languageSelector != null ? languageSelector.getValue() : "Java";
-        customAlgorithms.put(customToggle, getCustomAlgorithmTemplate(lang != null ? lang : "Java").stripTrailing());
+        customAlgorithms.put(customToggle, getCustomAlgorithmTemplate(selectedLanguageTag()).stripTrailing());
 
         int addButtonIndex = presetRow.getChildren().indexOf(addAlgorithmButton);
         presetRow.getChildren().add(Math.max(0, addButtonIndex), customToggle);
@@ -799,17 +971,74 @@ public class LeftPanelController {
 
             int mode = currentMode();
             String code = codeEditor.getText();
+            String functionName = selectedFunctionName();
+            if (functionName.isEmpty()) {
+                addLog("!", "#ff5f57", "Enter a function name to measure.");
+                return;
+            }
+            if (mode == 1 && arrayErrorLabel.isVisible()) {
+                addLog("!", "#ff5f57", "Fix the manual array before running Mode 1.");
+                return;
+            }
             int[] requestArray = Arrays.copyOf(parsedArray, parsedArray.length);
-            EventBus.getInstance().publish("run-analysis", new AnalysisRequest(mode, code, requestArray));
+            EventBus.getInstance().publish("run-analysis", new AnalysisRequest(mode, selectedLanguageTag(), functionName, code, requestArray));
             addLog("▶", "#a855f7", "Starting analysis — Mode " + mode + "...");
         });
     }
 
     private void subscribeToEvents() {
+        EventBus.getInstance().subscribe("loaders-loaded", payload ->
+                Platform.runLater(() -> updateLoaders(payload)));
+        EventBus.getInstance().subscribe("analysis-started", payload -> Platform.runLater(() -> setAnalysisRunning(true)));
+        EventBus.getInstance().subscribe("analysis-finished", payload -> Platform.runLater(() -> setAnalysisRunning(false)));
+        EventBus.getInstance().subscribe("analysis-error", payload ->
+                Platform.runLater(() -> addLog("!", "#ff5f57", String.valueOf(payload))));
         EventBus.getInstance().subscribe("analysis-log", payload ->
                 Platform.runLater(() -> addLog("▶", "#a855f7", String.valueOf(payload))));
         EventBus.getInstance().subscribe("analysis-complete", payload ->
-                Platform.runLater(() -> addLog("✓", "#22c55e", "Analysis complete: " + payload)));
+                Platform.runLater(() -> addLog("✓", "#22c55e", "Analysis complete.")));
+    }
+
+    private void updateLoaders(Object payload) {
+        if (!(payload instanceof List<?> values) || values.isEmpty()) {
+            return;
+        }
+        List<LoaderOption> supportedLoaders = values.stream()
+                .filter(LoaderOption.class::isInstance)
+                .map(LoaderOption.class::cast)
+                .filter(option -> isFrontendSupportedLoader(option.tag()))
+                .toList();
+        if (supportedLoaders.isEmpty()) {
+            return;
+        }
+        LoaderOption selected = languageSelector.getValue();
+        languageSelector.getItems().setAll(supportedLoaders);
+        languageSelector.getSelectionModel().select(
+                languageSelector.getItems().stream()
+                        .filter(option -> selected != null && option.tag().equals(selected.tag()))
+                        .findFirst()
+                        .orElse(languageSelector.getItems().getFirst())
+        );
+    }
+
+    private boolean isFrontendSupportedLoader(String tag) {
+        return "py".equals(tag) || "node".equals(tag) || "rs".equals(tag);
+    }
+
+    private String selectedLanguageTag() {
+        LoaderOption option = languageSelector != null ? languageSelector.getValue() : null;
+        return option != null ? option.tag() : "py";
+    }
+
+    private String selectedFunctionName() {
+        String value = functionNameField != null ? functionNameField.getText() : "algorithm";
+        return value == null ? "" : value.trim();
+    }
+
+    private void setAnalysisRunning(boolean running) {
+        analysisRunning = running;
+        runButton.setDisable(running);
+        runButton.setText(running ? "Running..." : "▶   Run Analysis");
     }
 
     private int currentMode() {
@@ -850,6 +1079,9 @@ public class LeftPanelController {
     private String iconStyleClass(String color) {
         if ("#22c55e".equalsIgnoreCase(color)) {
             return "console-icon-success";
+        }
+        if ("#ff5f57".equalsIgnoreCase(color)) {
+            return "console-icon-error";
         }
         return "console-icon-start";
     }

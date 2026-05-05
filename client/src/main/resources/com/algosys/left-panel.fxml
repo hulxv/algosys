@@ -70,7 +70,7 @@
 
                         <HBox VBox.vgrow="ALWAYS" styleClass="editor-shell">
                             <VBox.margin>
-                                <Insets left="16.0" right="16.0" bottom="12.0" />
+                                <Insets left="16.0" right="16.0" bottom="8.0" />
                             </VBox.margin>
                             <children>
                                 <VBox styleClass="gutter-container" VBox.vgrow="ALWAYS" prefWidth="44.0" minWidth="44.0" maxWidth="44.0">
@@ -83,11 +83,30 @@
                                                 <VBox fx:id="lineNumberGutter" styleClass="line-number-gutter" />
                                             </content>
                                         </ScrollPane>
-                                        <ComboBox fx:id="languageSelector" focusTraversable="false" prefWidth="44.0" minWidth="44.0" maxWidth="44.0" styleClass="language-selector" />
                                     </children>
                                 </VBox>
                                 <TextArea fx:id="codeEditor" wrapText="false" HBox.hgrow="ALWAYS"
                                           styleClass="code-editor" />
+                            </children>
+                        </HBox>
+
+                        <HBox spacing="10.0" alignment="CENTER_LEFT" styleClass="editor-options-row">
+                            <VBox.margin>
+                                <Insets left="16.0" right="16.0" bottom="12.0" />
+                            </VBox.margin>
+                            <children>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="LANGUAGE" styleClass="section-label" />
+                                        <ComboBox fx:id="languageSelector" focusTraversable="false" minHeight="34.0" prefHeight="34.0" maxWidth="Infinity" styleClass="language-selector" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="FUNCTION" styleClass="section-label" />
+                                        <TextField fx:id="functionNameField" text="algorithm" promptText="algorithm" minHeight="34.0" prefHeight="34.0" styleClass="function-name-field" />
+                                    </children>
+                                </VBox>
                             </children>
                         </HBox>
                     </children>
